@@ -1,63 +1,77 @@
 """
-Counts the total numbers of words and the use of defined words in a given set of texts
-
-I have used the following online repo for testing purposes which includes a number of online texts in
-the public domain:
-http://www.gutenberg.org/
+Counts the total numbers of words and the use of defined words in a given set of texts, based on the directory
+ path which is passed. Glob is used to retrieve the list of *.txt files in a given path
 
 Usage:
-    Update the books, directory_path & search_words_list variables and then run as usual
+    Update the following variables:
+        directory_path: a directory path which contains one or more *.txt files
+        search_words_list: list of words to search for the number of times they occur in each text file
 
-Tested on Python 3+
+    python3 <script.py>
 """
 
 
-def analyse_books(path, *search_words):
+def analyse_books_in_path(path, *search_words):
     """
     Function to count the total number of words and instances of certain words in a given text file
 
     Arguments:
-        path:           the absolute path to the text to to be searched
+        path:           the absolute path to a directory which contains one or more *.txt files
         search_words:   an arbitrary number of strings to search for within the text (number of times used)
     """
-    print("Analysing book:", path)
 
-    # Open the file and read as a string for later processing. Throw an exception if unable to access file
-    try:
-        with open(path) as file_object:
-            contents = file_object.read()
-    except FileNotFoundError:
-        print("WARNING: file not found:", path, "\n")
+    import glob
+
+    # Suffix the path with the correct glob expression to search for only text files
+    # Check whether we need to apply a trailing "/" character or not first
+    if path[-1] == "/":
+        glob_path = path + "*.txt"
     else:
-        # Calculate the number of words in the text by splitting the string into a list
-        #  using a space deliminator
-        in_words = contents.split()
-        number_of_words = len(in_words)
-        print("The approx. number of words in", book, "is", number_of_words)
+        glob_path = path + "/*.txt"
 
-        # Calculate the number of instances of the 'search_words' parameters in the text
-        #  This is an arbitrary number passed to the function
-        for search_word in search_words:
-            # Convert to lowercase before searching
-            search_word_count = contents.lower().count(search_word)
-            print("The word '" + search_word + "' appears", search_word_count, "times in this text")
-    print()
+    # Retrieve the list of files with a *.txt extension in the path argument
+    books = glob.glob(glob_path)
+
+    # Iterate through the books (if the list isn't empty)
+    if books:
+        for book in books:
+
+            print("Analysing book:", book)
+
+            # Open the file and read as a string for later processing. Throw an exception if unable to access file
+            try:
+                with open(book) as file_object:
+                    contents = file_object.read()
+            except FileNotFoundError:
+                print("WARNING: file not found:", book, "\n")
+            else:
+                # Calculate the total number of words in the text by splitting the string into a list
+                #  using a space deliminator. Then check the length of the list
+                in_words = contents.split()
+                number_of_words = len(in_words)
+                print("The approx. number of words in", book, "is", number_of_words)
+
+                # Calculate the number of instances of the 'search_words' parameters in the text
+                #  This is an arbitrary number passed to the function
+                if search_words:
+                    for search_word in search_words:
+                        # Convert to lowercase before searching
+                        search_word_count = contents.lower().count(search_word)
+                        print("The word '" + search_word + "' appears", search_word_count, "times in this text")
+                else:
+                    print("INFO: No search_words parameters were passed")
+
+            print()
+    else:
+        print("No files with *.txt extensions found in path:", path)
 
 
-# File names of the books to search through
-books = ['Moby Dick.txt', 'Pride and Prejudice.txt', 'Sherlock Holmes.txt']
+# Directory the books are stored in. Function will search for *.txt files in this directory
+# Provide an absolute path
+directory_path = '/path/to/files/'
 
-# Directory the books are stored in
-directory_path = '/path/to/file/'
+# Word(s) to search for within the text
+search_words_list = ['the', 'and', 'sherlock']
 
-# Word to search for within the text
-search_words_list = ('the', 'and', 'sherlock')
-
-# Iterate through the books and call the function (if the books list is not empty)
-if books:
-    for book in books:
-        file_path = directory_path + book
-        # Prefix search_words_list with * to expand the list before sending as an argument
-        analyse_books(file_path, *search_words_list)
-else:
-    print("There are no books to process as the 'books' list is empty.")
+# Call the function. Prefix search_words_list with * to expand list before passing arguments
+analyse_books_in_path(directory_path, *search_words_list)
