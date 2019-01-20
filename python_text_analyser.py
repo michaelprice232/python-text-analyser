@@ -66,12 +66,15 @@ def analyse_books_in_path(path, *search_words):
         print("No files with *.txt extensions found in path:", path)
 
 
-# Directory the books are stored in. Function will search for *.txt files in this directory
-# Provide an absolute path
-directory_path = '/path/to/files/'
+# Only execute the following if running the script directly,
+# rather than imported by a unittest based class for example
+if __name__ == '__main__':
+    # Directory the books are stored in. Function will search for *.txt files in this directory
+    # Provide an absolute path
+    directory_path = '/Users/michael.price/Downloads'
 
-# Word(s) to search for within the text
-search_words_list = ['the', 'and', 'sherlock']
+    # Word(s) to search for within the text
+    search_words_list = ['the', 'and', 'sherlock']
 
-# Call the function. Prefix search_words_list with * to expand list before passing arguments
-analyse_books_in_path(directory_path, *search_words_list)
+    # Call the function. Prefix search_words_list with * to expand list before passing arguments
+    analyse_books_in_path(directory_path, *search_words_list)
